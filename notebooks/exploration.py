@@ -29,3 +29,6 @@ for diag, temp in df.groupby("diagnostic")["temperature"].mean().items():
     print(f"  {diag} : {temp:.1f} C")
 
 print("Exploration terminee !")
+print("--- Patients par sexe et par diagnostic ---")
+groupes = df.groupby(["sexe", "diagnostic"]).size()
+print(groupes)
