@@ -166,3 +166,108 @@ print(f"\nProbabilites par classe :")
 for classe, proba in zip(model_loaded.classes_, probas):
     bar = '#' * int(proba * 30)
     print(f" {classe:8s} : {proba:.1%} {bar}")
+
+
+importances = model.feature_importances_
+for name, imp in sorted(zip(feature_cols, importances),
+                         key=lambda x: x[1], reverse=True):
+    print(f" {name:20s} : {imp:.3f}")
+
+
+    
+patient1 = {
+    'age': 10,
+    'sexe': 'M',
+    'temperature':37 ,
+    'tension_sys': 110,
+    'toux': False,
+    'fatigue': False,
+    'maux_tete': False,
+    'region': 'Dakar'
+}
+
+# Encoder
+sexe_enc   = le_sexe_loaded.transform([patient1['sexe']])[0]
+region_enc = le_region_loaded.transform([patient1['region']])[0]
+
+# Construire le vecteur
+features = [
+patient1['age'], sexe_enc, 
+patient1['temperature'],
+patient1['tension_sys'], 
+int(patient1['toux']),
+int(patient1['fatigue']),
+int(patient1['maux_tete']), region_enc
+]
+
+# Prédire
+diagnostic = model_loaded.predict([features])[0]
+probas     = model_loaded.predict_proba([features])[0]
+
+print(f"Patient 1 → {diagnostic}")
+for classe, proba in zip(model_loaded.classes_, probas):
+    print(f"  {classe:8s} : {proba:.1%}")
+
+
+
+    patient2 = {
+    'age': 30,
+    'sexe': 'M',
+    'temperature': 40,
+    'tension_sys': 90,
+    'toux': False,
+    'fatigue': True,
+    'maux_tete': True,
+    'region': 'Dakar'
+}
+
+# Encoder
+sexe_enc   = le_sexe_loaded.transform([patient1['sexe']])[0]
+region_enc = le_region_loaded.transform([patient1['region']])[0]
+
+# Construire le vecteur
+features = [
+    patient2['age'], sexe_enc, patient2['temperature'],
+    patient2['tension_sys'], int(patient2['toux']),
+    int(patient2['fatigue']), int(patient2['maux_tete']), region_enc
+]
+
+# Prédire
+diagnostic = model_loaded.predict([features])[0]
+probas     = model_loaded.predict_proba([features])[0]
+
+print(f"Patient 2 → {diagnostic}")
+for classe, proba in zip(model_loaded.classes_, probas):
+    print(f"  {classe:8s} : {proba:.1%}")
+
+
+
+    patient3 = {
+    'age': 76,
+    'sexe': 'M',
+    'temperature': 39,
+    'tension_sys': 80,
+    'toux': True,
+    'fatigue': False,
+    'maux_tete': False,
+    'region': 'Dakar'
+}
+
+# Encoder
+sexe_enc   = le_sexe_loaded.transform([patient1['sexe']])[0]
+region_enc = le_region_loaded.transform([patient1['region']])[0]
+
+# Construire le vecteur
+features = [
+    patient3['age'], sexe_enc, patient3['temperature'],
+    patient3['tension_sys'], int(patient3['toux']),
+    int(patient2['fatigue']), int(patient3['maux_tete']), region_enc
+]
+
+# Prédire
+diagnostic = model_loaded.predict([features])[0]
+probas     = model_loaded.predict_proba([features])[0]
+
+print(f"Patient 3 → {diagnostic}")
+for classe, proba in zip(model_loaded.classes_, probas):
+    print(f"  {classe:8s} : {proba:.1%}")
