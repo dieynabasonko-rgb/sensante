@@ -41,7 +41,12 @@ else:
 
 # --- 5. CHARGER LE MODELE ML ---
 print("Chargement du modele...")
-model = joblib.load("models/model.pkl")
+import os
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+MODEL_PATH = os.path.join(BASE_DIR, "models", "model.pkl")
+
+model = joblib.load(MODEL_PATH)
 le_sexe = joblib.load("models/encoder_sexe.pkl")
 le_region = joblib.load("models/encoder_region.pkl")
 feature_cols = joblib.load("models/feature_cols.pkl")
@@ -76,13 +81,13 @@ class ExplainOutput(BaseModel):
     explication: str = Field(..., description="Explication en francais")
     modele_llm: str = Field(default="llama-3.1-8b-instant", description="Modele LLM utilise")
 
-# --- 7. SYSTEM PROMPT ---
 SYSTEM_PROMPT = """Tu es un assistant medical senegalais.
 Tu recois un diagnostic et des donnees patient.
-Explique le resultat en francais simple,
-comme un medecin parlerait a son patient.
-Sois rassurant mais recommande toujours
-une consultation medicale.
+Explique le resultat en melangant le francais et le wolof simple,
+comme un medecin senegalais parlerait a son patient.
+Par exemple utilise des mots wolof comme : yaram (corps), danga febar (tu es malades),
+dem Hopital fann (aller a l'hopital fann), baxna (c'est bien).
+Sois rassurant mais recommande toujours une consultation medicale.
 Maximum 3 phrases.
 Ne fais JAMAIS de diagnostic toi-meme.
 Tu expliques uniquement le diagnostic fourni."""
@@ -191,3 +196,16 @@ def explain(data: ExplainInput):
         explication = f"Erreur lors de l'appel au LLM : {str(e)}"
 
     return ExplainOutput(explication=explication)
+
+
+
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+
+# Servir le frontend comme fichier statique
+app.mount("/static", StaticFiles(directory="frontend"), name="static")
+
+@app.get("/")
+def serve_frontend():
+    """Servir la page d'accueil."""
+    return FileResponse("frontend/index.html")

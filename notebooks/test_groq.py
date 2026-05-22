@@ -94,3 +94,30 @@ Explique ce resultat au patient."""
     temperature=0.3
 )
 print(response3.choices[0].message.content)
+
+print("\n=== Exercice 2 : Test des temperatures ===")
+
+for temp in [0.0, 0.5, 1.0]:
+    response_temp = client.chat.completions.create(
+        model="llama-3.1-8b-instant",
+        messages=[
+            {
+                "role": "system",
+                "content": """Tu es un assistant medical senegalais.
+Explique le resultat en francais simple.
+Maximum 3 phrases.
+Ne fais JAMAIS de diagnostic toi-meme."""
+            },
+            {
+                "role": "user",
+                "content": """Patient : Homme, 35 ans, region Dakar
+Temperature : 39.5 C
+Diagnostic du modele : paludisme (probabilite 72%)
+Explique ce resultat au patient."""
+            }
+        ],
+        max_tokens=200,
+        temperature=temp
+    )
+    print(f"\n--- temperature={temp} ---")
+    print(response_temp.choices[0].message.content)
